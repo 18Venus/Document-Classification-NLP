@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template
+import os
 import joblib
 
 # Load model, vectorizer, and label encoder
@@ -19,13 +20,14 @@ def predict():
 
     if input_text and input_text.strip() != "":
         text_vector = vectorizer.transform([input_text])
-        pred_num = model.predict(text_vector)[0]   # numeric (0–4)
-        prediction = label_encoder.inverse_transform([pred_num])[0].title()  # category string
-        print("DEBUG: Prediction =", prediction)  # log to terminal
+        pred_num = model.predict(text_vector)[0]   
+        prediction = label_encoder.inverse_transform([pred_num])[0].title()  
+        print("DEBUG: Prediction =", prediction)  
 
     return render_template("index.html",
                            prediction=prediction,
                            input_text=input_text)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000)) 
+    app.run(host="0.0.0.0", port=port)
