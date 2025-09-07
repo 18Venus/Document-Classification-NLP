@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BBC News Classifier</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>BBC News Article Classifier</h2>
+
+    <form action="/predict" method="POST">
+        <textarea name="news_text" placeholder="Enter news article text here...">{{ input_text }}</textarea>
+        <br>
+        <input type="submit" value="Classify">
+    </form>
+
+    {% if prediction %}
+        <div class="result">
+            Predicted Category: {{ prediction }}
+        </div>
+    {% endif %}
+</body>
+</html>

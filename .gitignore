@@ -1,0 +1,13 @@
+# Ignore datasets
+*.csv
+*.zip
+*.tsv
+*.xlsx
+*.json
+
+# Ignore Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
