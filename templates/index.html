@@ -1,17 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>BBC News Classifier</title>
+    <title>Document Classifier</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>BBC News Article Classifier</h2>
+    <h2>Document Classification with NLP</h2>
 
-    <form action="/predict" method="POST">
-        <textarea name="news_text" placeholder="Enter news article text here...">{{ input_text }}</textarea>
-        <br>
-        <input type="submit" value="Classify">
-    </form>
+    <div class="container">
+        <!-- Paste Text Card -->
+        <div class="card">
+            <h3>Paste Text</h3>
+            <form action="/predict" method="POST">
+                <textarea name="news_text" placeholder="Enter document text here...">{{ input_text }}</textarea>
+                <br>
+                <input type="submit" value="Classify Text">
+            </form>
+        </div>
+
+        <!-- Upload File Card -->
+        <div class="card">
+            <h3>Upload File</h3>
+            <form action="/predict_file" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" accept=".txt,.pdf,.docx">
+                <br>
+                <input type="submit" value="Classify File">
+            </form>
+        </div>
+    </div>
 
     {% if prediction %}
         <div class="result">
