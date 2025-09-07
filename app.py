@@ -4,15 +4,8 @@ import joblib
 from werkzeug.utils import secure_filename
 import PyPDF2
 import docx
-import re
 
-try:
-    import spacy
-    nlp = spacy.load("en_core_web_sm")
-except Exception as e:
-    nlp = None
-    print("⚠️ spaCy model not loaded, preprocessing disabled:", e)
-
+# Load model, vectorizer, encoder
 model = joblib.load("svm_model.pkl")
 vectorizer = joblib.load("tfidf_vectorizer.pkl")
 label_encoder = joblib.load("label_encoder.pkl")
@@ -21,28 +14,6 @@ app = Flask(__name__)
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-def preprocess_text(text: str) -> str:
-    """
-    Preprocess text:
-    - Lowercase
-    - Remove punctuation/numbers
-    - Lemmatize
-    - Remove stopwords
-    """
-    text = text.lower()
-    text = re.sub(r'[^a-z\s]', ' ', text)
-
-    if nlp:  
-        doc = nlp(text)
-        tokens = [
-            token.lemma_
-            for token in doc
-            if not token.is_stop and token.lemma_.strip() != ''
-        ]
-        return " ".join(tokens)
-    else:
-        return text  
 
 def extract_text_from_file(filepath):
     text = ""
@@ -68,8 +39,8 @@ def predict_text():
     input_text = request.form.get("news_text")
     prediction = None
     if input_text and input_text.strip():
-        cleaned_text = preprocess_text(input_text)
-        text_vector = vectorizer.transform([cleaned_text])
+        # Vectorize raw text directly
+        text_vector = vectorizer.transform([input_text])
         pred_num = model.predict(text_vector)[0]
         prediction = label_encoder.inverse_transform([pred_num])[0].title()
     return render_template("index.html", prediction=prediction, input_text=input_text)
@@ -89,9 +60,8 @@ def predict_file():
     if not input_text:
         return render_template("index.html", prediction="⚠️ Could not extract text")
 
-    # Preprocess + predict
-    cleaned_text = preprocess_text(input_text)
-    text_vector = vectorizer.transform([cleaned_text])
+    # Vectorize raw text directly
+    text_vector = vectorizer.transform([input_text])
     pred_num = model.predict(text_vector)[0]
     prediction = label_encoder.inverse_transform([pred_num])[0].title()
 
